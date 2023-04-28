@@ -1,0 +1,253 @@
+﻿-- SELECT STATEMENTS
+SELECT * FROM Customers; -- return all columns
+SELECT CustomerName, City FROM Customers; -- return specified columns
+SELECT DISTINCT City FROM Customers; -- return only distinct (different values)
+SELECT COUNT(DISTINCT Country) FROM Customers; -- list the number of different (distinct) customer countries
+
+
+-- WHERE CLAUSE
+SELECT * FROM Customers WHERE Country = 'Mexico'; -- returns all customers from the country 'Mexico'
+SELECT * FROM Customers WHERE CustomerId = 1; -- equal; numeric field
+SELECT * FROM Products WHERE Price > 10; -- greater than
+SELECT * FROM Products WHERE Price < 50; -- less than
+SELECT * FROM Products WHERE Price >= 100; -- greater than or equal
+SELECT * FROM Products WHERE Price <= 500; -- less than or equal
+SELECT * FROM Products WHERE Price <> 800; -- not equal. Note: In some versions of SQL this operator may be written as !=
+SELECT * FROM Products WHERE Price BETWEEN 50 AND 60; -- between a certain range
+SELECT * FROM Customers WHERE Country LIKE 'A%'; -- search for a pattern
+SELECT * FROM Customers WHERE City IN ('Paris','London'); -- to specify multiple possible values for a column
+
+
+-- AND, OR, and NOT operators
+SELECT * FROM Customers WHERE Country = 'Germany' AND City = 'Berlin';
+SELECT * FROM Customers WHERE City = 'Berlin' OR City = 'München';
+SELECT * FROM Customers WHERE NOT Country = 'Germany';
+SELECT * FROM Customers WHERE Country = 'Germany' AND (City = 'Berlin' OR City = 'München');
+SELECT * FROM Customers WHERE NOT Country = 'Germany' AND NOT Country = 'USA';
+
+
+-- ORDER BY keyword
+SELECT * FROM Customers ORDER BY Cities; -- sorted ascending (by default) by Cities
+SELECT * FROM Customers ORDER BY Country DESC; -- sorted descending by the Country
+SELECT * FROM Customers ORDER BY Country, CustomerName; -- orders by Country, but if some rows have same Country, it orders by CustomerName
+SELECT * FROM Customers ORDER BY Country ASC, CustomerName DESC;-- ascending by Country, and descending by CustomerName
+
+
+-- INSERT INTO statement
+INSERT INTO Customers (CustomerName, ContactName, Address, City, PostalCode, Country)
+VALUES ('Cardinal', 'Tom B. Erichsen', 'Skagen 21', 'Stavanger', '4006', 'Norway');
+
+
+-- NULL value
+SELECT CustomerName, ContactName, Address FROM Customers WHERE Address IS NULL; -- list all customers with a Null value in 'Address' field
+SELECT CustomerName, ContactName, Address FROM Customers WHERE Address IS NOT NULL; -- list all customers with a value in the 'Address' field
+
+
+-- UPDATE statement
+UPDATE Customers SET ContactName = 'Alfred Schmidt', City = 'Frankfurt' WHERE CustomerID = 1;
+
+
+-- DELETE statement
+DELETE FROM Customers WHERE CustomerName = 'Alfreds Futterkiste';
+
+
+-- SQL TOP, LIMIT, FETCH FIRST or ROWNUM clause
+SELECT TOP 3 * FROM Customers; -- SQL Server to list top 3
+SELECT * FROM Customers LIMIT 3; -- MySQL to list top 3
+
+
+-- SQL MIN() and MAX() functions
+SELECT MIN(Price) AS SmallestPrice FROM Products; -- return cheapest product price with column name 'SmallestPrice'
+SELECT MAX(Price) AS LargestPrice FROM Products; -- return most expensive product price with column name 'LargestPrice'
+
+
+-- SQL COUNT(), AVG(), and SUM() functions
+SELECT COUNT(ProductID) FROM Products; -- find the number of products
+SELECT AVG(Price) FROM Products; -- find the average price of all products
+SELECT SUM(Quantity) FROM OrderDetails; -- find the sum of 'Quantity' fields in the 'OrderDetails' table
+
+
+-- LIKE operator
+SELECT * FROM Customers WHERE CustomerName LIKE 'a%'; -- select all customers with a CustomerName starting with 'a'
+SELECT * FROM Customers WHERE CustomerName LIKE '%a'; -- ends with 'a'
+SELECT * FROM Customers WHERE CustomerName LIKE '%or%'; -- have 'or' in any position
+SELECT * FROM Customers WHERE CustomerName LIKE '_r%'; -- have 'r' in the second position
+SELECT * FROM Customers WHERE CustomerName LIKE 'a__%'; -- starts with 'a' and are at least 3 chars in length
+SELECT * FROM Customers WHERE ContactName LIKE 'a%o'; -- starts with 'a' and ends with 'o'
+SELECT * FROM Customers WHERE CustomerName NOT LIKE 'a%'; --not start with 'a'
+
+
+-- IN operator
+SELECT * FROM Customers WHERE Country IN ('Germany', 'France', 'UK'); -- select all customers that are located in 'Germany', 'France', 'UK'
+SELECT * FROM Customers WHERE Country NOT IN ('Singapore', 'Malaysia'); -- select all customers that are not located in 'Singapore', 'Malaysia'
+SELECT * FROM Customers WHERE COUNTRY IN (SELECT Country FROM Suppliers); -- select all customers that are from the same countries as the suppliers
+
+
+-- BETWEEN (INCLUSIVE) - number, text, and dates
+SELECT * FROM Products WHERE Price BETWEEN 10 AND 20; -- return all products with a price between 10 and 20;
+SELECT * FROM Products WHERE Price NOT BETWEEN 50 AND 60; -- outside the range of 50 and 60
+SELECT * FROM Products WHERE Price BETWEEN 10 AND 20 AND CategoryID NOT IN (1,2,3); -- products with category ID of 1,2,3 and price between 10 and 20
+SELECT * FROM Products WHERE ProductName BETWEEN "Ace" AND "Apple" ORDER BY ProductName; -- select all products with ProductName between Ace and Apple
+SELECT * FROM Orders WHERE OrderDate BETWEEN #07/01/1996# AND #07/31/1996#; -- order dates in the month of July
+
+
+-- SQL Aliases for Columns
+SELECT CustomerID AS ID FROM Customers;
+SELECT ContactName AS [Contact Person] FROM Customers; -- requires [] if alias contains space
+-- creates an alias named 'Address' that combine four columns (Address, PostalCode, City, Country)
+SELECT CustomerName, CONCAT(Address,', ',PostalCode,', ',City,', ',Country) AS Address FROM Customers;
+
+
+-- SQL Aliases for Tables
+-- select all orders from the customers with CustomerId=4 (Jack). we use the 'Customers' and 'Orders' tables, and give them the table aliases of 'c' and 'o' respectively
+SELECT o.OrderID, o.OrderDate, c.CustomerName
+FROM Customers AS c, Orders AS o
+WHERE c.CustomerName='Jack' AND c.CustomerID=o.CustomerID;
+
+
+-- SQL JOIN - combine rows from two or more tables, based on a related column between them
+SELECT Orders.OrderID, Customers.CustomerName, Orders.OrderDate
+FROM Orders
+JOIN Customers ON Orders.CustomerID=Customers.CustomerID;
+
+
+-- SQL INNER JOIN - selects records that have matching values in both tables
+-- note: if there are records in the 'Orders' table that do not have matches in 'Customers', these orders will not be shown
+SELECT Orders.OrderID, Customers.CustomerName
+FROM Orders
+INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID;
+-- JOIN three tables
+SELECT Orders.OrderID, Customers.CustomerName, Shippers.ShipperName
+FROM ((Orders
+INNER JOIN Customers ON Orders.CustomerID = Customers.CustomerID)
+INNER JOIN Shippers ON Orders.ShipperID = Shippers.ShipperID);
+
+
+-- SQL LEFT JOIN - returns all records from the left table, and matching records from the right table
+-- note: returns all records from the left table (Customers), even if there are no matches in the right table (Orders)
+SELECT Customers.CustomerName, Orders.OrderID
+FROM Customers
+LEFT JOIN Orders ON Customers.CustomerID = Orders.CustomerID
+ORDER BY Customers.CustomerName;
+
+
+-- SQL RIGHT JOIN = returns all records from the right table, and matching records from the left table
+SELECT Orders.OrderID, Employees.LastName, Employees.FirstName
+FROM Orders
+RIGHT JOIN Employees ON Orders.EmployeeID = Employees.EmployeeID
+ORDER BY Orders.OrderID;
+-- note: returns all records from the right table (Employees), even if there are no matches in the left table (Orders)
+
+
+-- SQL OUTER JOIN - returns all records when there is a match in left or right table records
+SELECT Customers.CustomerName, Orders.OrderID
+FROM Customers
+FULL OUTER JOIN Orders ON Customers.CustomerID=Orders.CustomerID
+ORDER BY Customers.CustomerName;
+-- note: returns all matching records from both tables where the other table matches or not. so, if there are rows in 'Customers'
+-- that do not have matches in 'Orders', or if there are rows in 'Orders' that do not have matches in 'Customers', those
+-- rows will be listed as well
+
+
+-- SQL SELF JOIN - regular join, but the table is joined with itself
+-- matches customers that are from the same city
+SELECT A.CustomerName AS CustomerName1, B.CustomerName AS CustomerName2, A.City
+FROM Customers A, Customers B
+WHERE A.CustomerID <> B.CustomerID
+AND A.City = B.City
+ORDER BY A.City;
+
+
+-- SQL UNION Operator - combine the result-set of two or more SELECT statement
+-- returns the cities (only distinct values) from both the 'Customers' and the 'Suppliers' table
+SELECT City FROM Customers
+UNION
+SELECT City FROM Suppliers
+ORDER BY City;
+-- use UNION ALL to also selecte duplicate values
+SELECT City FROM Customers
+UNION ALL
+SELECT City FROM Suppliers
+ORDER BY City;
+-- returns the German cities (only distinct values) from both the 'Customers' and the 'Suppliers' table
+SELECT City, Country FROM Customers
+WHERE Country='Germany'
+UNION
+SELECT City, Country FROM Suppliers
+WHERE Country='Germany'
+ORDER BY City;
+
+
+-- SQL GROUP BY Statement - groups rows that have the same values into summary rows, like 'find the number of customers in each country'
+-- often used with aggregate functions (e.g. COUNT(), MAX(), MIN(), SUM(), AVG()) to group the result-set by one or more columns
+-- list the number of customers in each country
+SELECT COUNT(CustomerID), Country
+FROM Customers
+GROUP BY Country;
+-- list the number of customers in each country, sorted high to low
+SELECT COUNT(CustomerID), Country
+FROM Customers
+GROUP BY Country
+ORDER BY COUNT(CustomerID) DESC;
+-- list the number of orders sent by each shipper
+SELECT Shippers.ShipperName, COUNT(Orders.OrderID) AS NumberOfOrders FROM Orders
+LEFT JOIN Shippers ON Orders.ShipperID = Shippers.ShipperID
+GROUP BY ShipperName;
+
+
+-- HAVING clause - was added to SQL because the WHERE keyword cannot be used with aggregate functions
+-- list the number of customers in each country. only include countries with more than 5 customers
+SELECT COUNT(CustomerID), Country
+FROM Customers
+GROUP BY Country
+HAVING COUNT(CustomerID) > 5;
+-- list the number of customers in each country, sorted high to low (only include countries with more than 5 customers)
+SELECT COUNT(CustomerID), Country
+FROM Customers
+GROUP BY Country
+HAVING COUNT(CustomerID) > 5
+ORDER BY COUNT(CustomerID) DESC;
+
+
+-- EXISTS -- used to test for the existence of any record in a subquery. returns true if the subquery returns one or more records
+-- returns TRUE and lists the suppliers with a product price less than 20
+SELECT SupplierName
+FROM Suppliers
+WHERE EXISTS (SELECT ProductName FROM Products WHERE Products.SupplierID = Suppliers.supplierID AND Price < 20);
+
+
+-- ANY and ALL Operators - allow you to perform a comparison between a single column value and a range of other values
+-- ANY operator: returns a boolean value as a result, TRUE if ANY of the subquery values meet the condition
+-- lists the ProductName if it finds ANY records in the OrderDetails table has Quantity equal to 10 (this will return TRUE because the Quantity column has some values of 10)
+SELECT ProductName
+FROM Products
+WHERE ProductID = ANY
+ (SELECT ProductID
+ FROM OrderDetails
+ WHERE Quantity = 10);
+
+
+-- SQL SELECT INTO - copies data from one table into a new table
+
+
+-- SQL INSERT INTO SELECT Statement
+
+
+-- SQL CASE Expression
+SELECT OrderID, Quantity,
+CASE
+    WHEN Quantity > 30 THEN 'The quantity is greater than 30'
+    WHEN Quantity = 30 THEN 'The quantity is 30'
+    ELSE 'The quantity is under 30'
+END AS QuantityText
+FROM OrderDetails;
+-- returns
+--10255    35 The quantity is greater than 30
+--10255    25 The quantity is under 30
+--10255    30 The quantity is 30
+
+
+-- SQL NULL Functions
+-- IFNULL() function lets you return an alternative value if an expression is NULL
+SELECT ProductName, UnitPrice * (UnitsInStock + IFNULL(UnitsOnOrder, 0))
+FROM Products;
