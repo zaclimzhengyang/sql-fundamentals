@@ -303,5 +303,95 @@ CREATE TABLE Orders (
     REFERENCES Persons(PersonID)
 );
 
+-- SQL CREATE INDEX Statement
+-- the statement is used to create indexes in tables. 
+-- indexes are used to retrieve data from the database more quickly than otherwise. the users cannot see the indexes, they are just used to speed up searches / queries
+-- an index works by creating a copy of a portion of the table's data in a separate data structure, which
+-- is then sorted and organised to facilitate faster searches. this separate data structure can then be 
+-- searched more quickly than the original table data, allowing for faster query processing and better
+-- overall performance
+-- the benefits of using indexes in SQL include:
+-- 	1. improved query performance: with an index, queries can be processed more quickly, 
+--		resulting in faster response times for users
+--	2. reduced I/O operations: by using an index, the database can often retrieve data from the index
+--		itself rather than accessing the entire table, which reduces I/O operations and saves processing time
+--	3. increased scalability: as the size of a database grows, indexes can help maintain faster query
+--		performance, allowing the database to scale more easily
+--
+--	steps on creating a new index object on the table column(s) we want to index
+--		1. determine which column(s) we want to index
+--		2. choose a name for the index
+--		3. write the SQL command to create the index, specifying the name of the index, the 
+--			name of the table, and the name of the column(s0 to be indexed.
+--		4. execute the SQL command to create the index
+-- create a table 'Customers'
+CREATE TABLE customers (
+  id INT PRIMARY KEY,
+  name VARCHAR(50),
+  email VARCHAR(50)
+);
+-- create index on the 'email' column
+CREATE INDEX email_index ON customers (email);
+-- query the 'customers' table using the 'email' index
+SELECT id, name FROM customers WHERE email = 'john@example.com';
+-- MySQL query optimiser will use the index to quickly locate the row that match the WHERE clause, 
+-- rather than scanning the entire table. this can greatly improve query performance, especially
+-- on large tables with many rows.
+-- note: not all queries can benefit from an index, and in some cases, using an index may actually slow
+-- down the query. the MySQL query optimiser will automatically decide whether to use an index based on factors
+-- such as the size of the table, the selectivity of the indeed column and the complexity of the query
+-- there are different types of indexes in MySQL:
+--	1. Primary Key Index: 
+--	2. Unique Index:
+--	3. Full-Text Index:
+--	4. Composite Index:
+--	5. Spatial Index:
+-- and while declaring CREATE INDEX on table and column, we have to specify which type of index we want
+-- to create a primary key index on a table in MySQL
+CREATE TABLE table_name (
+  id INT PRIMARY KEY,
+  ...
+);
+-- to create a unique index on a table in MySQL
+CREATE TABLE table_name (
+  column_name data_type,
+  UNIQUE (column_name)
+);
+-- to create a full-text index on a table in MySQL
+CREATE FULLTEXT INDEX index_name ON table_name (column_name);
+-- to create a composite index on a table in MySQL
+CREATE INDEX index_name ON table_name (column1, column2);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
