@@ -1,4 +1,4 @@
-﻿-- SELECT STATEMENTS
+-- SELECT STATEMENTS
 SELECT * FROM Customers; -- return all columns
 SELECT CustomerName, City FROM Customers; -- return specified columns
 SELECT DISTINCT City FROM Customers; -- return only distinct (different values)
@@ -251,3 +251,57 @@ FROM OrderDetails;
 -- IFNULL() function lets you return an alternative value if an expression is NULL
 SELECT ProductName, UnitPrice * (UnitsInStock + IFNULL(UnitsOnOrder, 0))
 FROM Products;
+
+-- SQL PRIMARY KEY Constraint
+-- PRIMARY KEY constraints uniquely identifies each record in a table
+-- Primary keys must contain UNIQUE values, and cannot contain NULL values
+-- a table can only have ONE primary key: and in the table, this primary key can consist of single or multiple columns (fields)
+CREATE TABLE Persons (
+    ID int NOT NULL,
+    LastName varchar(255) NOT NULL,
+    FirstName varchar(255),
+    Age int,
+    PRIMARY KEY (ID)
+);
+-- one Primary Key (PK_PERSON). however, the value of the PK is made up of two columns (ID + LastName)
+
+
+-- SQL FOREIGN KEY Constraint
+-- FK constraint is used to prevent actions that would destroy links between tables
+-- a FK is a field (or collection of fields) in one table, that refers to the PK in another table
+-- the table with the foreign key is called the child table, and the table with the primary key is called the referenced or parent table
+-- Persons Table
+-- PersonID	LastName	FirstName	Age
+-- 1	Hansen	Ola	30
+-- 2	Svendson	Tove	23
+-- 3	Pettersen	Kari	20
+
+-- Orders Table
+-- OrderID	OrderNumber	PersonID
+-- 1	77895	3
+-- 2	44678	3
+-- 3	22456	2
+-- 4	24562	1
+
+-- 'PersonID' column in the 'Persons' table is the PRIMARY KEY in the 'Persons' table
+-- 'PersonID' column in the 'Orders' table is a FOREIGN KEY in the 'Orders' table
+-- FK constraint prevents invalid data from being inserted into the FK column, because it has to be one of the values contained in the parent table.
+CREATE TABLE Orders (
+    OrderID int NOT NULL,
+    OrderNumber int NOT NULL,
+    PersonID int,
+    PRIMARY KEY (OrderID),
+    FOREIGN KEY (PersonID) REFERENCES Persons(PersonID)
+);
+-- when defining a FOREIGN KEY constraint on multiple columns, use this:
+CREATE TABLE Orders (
+    OrderID int NOT NULL,
+    OrderNumber int NOT NULL,
+    PersonID int,
+    PRIMARY KEY (OrderID),
+    CONSTRAINT FK_PersonOrder FOREIGN KEY (PersonID)
+    REFERENCES Persons(PersonID)
+);
+
+
+
