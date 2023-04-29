@@ -342,10 +342,30 @@ SELECT id, name FROM customers WHERE email = 'john@example.com';
 -- such as the size of the table, the selectivity of the indeed column and the complexity of the query
 -- there are different types of indexes in MySQL:
 --	1. Primary Key Index: 
+--		primary key index is a type of index in a relational database that is used to enforce the primary
+--		key constraint on a table. the primary key is a column or a combination of columns that uniquely
+--		identifies each record in the table. in most database systems, the primary key is implemented
+--		as a unique index, which means that the values in the primary key column(s) must be unique
+--		and that the primary key index is used to enforce this constraints.
+--	2. Composite Index:
+--		composite index is an index that is created on multiple columns in a database table. instead of creating
+--		separate indexes on each individual column, a composite index combines the indexed values of multiple column
+--		into a single index. it is particularly useful for situations where queries frequently search for 
+--		rows that match multiple criteria. by creating a composite index on the columns that are frequently searched
+--		together, the database system can more efficiently find the relevant rows.
 --	2. Unique Index:
+--		unique index ensures that the values in the indexed column(s) are unique, meaning that no two
+--		rows in the table can have the same value(s) in the indexed column(s). this can be useful for 
+--		ensuring data integrity and for optimising queries that involve searching for specific values
+--		in the indexed column(s)
 --	3. Full-Text Index:
---	4. Composite Index:
---	5. Spatial Index:
+		a full-text index is a type of index in a database system that is used to enable full-text search
+--		functionality. full-text search allows users to search for words or phrases within the content of
+--		text-based columns in a table, such as a column containing a long article or a column containing 
+--		product description. it can be particularly useful for applications that involve searching large
+--		amount of text-based data, such as search engines or document management systems.
+-- to query using full-text index
+SELECT column1, column2 FROM table_name WHERE MATCH (column_name) AGAINST ('search term');
 -- and while declaring CREATE INDEX on table and column, we have to specify which type of index we want
 -- to create a primary key index on a table in MySQL
 CREATE TABLE table_name (
@@ -361,37 +381,4 @@ CREATE TABLE table_name (
 CREATE FULLTEXT INDEX index_name ON table_name (column_name);
 -- to create a composite index on a table in MySQL
 CREATE INDEX index_name ON table_name (column1, column2);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
